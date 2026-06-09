@@ -14,6 +14,7 @@
   --ls-canard:      #16B7C7;
   --ls-canard-dark: #0E8A97;
   --ls-fond:        #FBFFFA;
+  --ls-fond-carte:  #EDFFED;
   --ls-white:       #FFFFFF;
   --ls-gray-100:    #F4F4F2;
   --ls-gray-200:    #E2E2DE;
@@ -42,9 +43,9 @@
 
 body {
   font-family: var(--ls-font);
-  font-size: 14px;
+  font-size: 15px;
   color: var(--ls-gray-600);
-  background: var(--ls-gray-100);
+  background: var(--ls-fond);
   margin: 0;
   padding: 0;
 }
@@ -91,7 +92,7 @@ body {
 }
 
 .ls-col-header-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ls-violet);
   flex: 1;
@@ -101,7 +102,7 @@ body {
 }
 
 .ls-col-counter {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--ls-gray-400);
   background: var(--ls-gray-100);
@@ -171,7 +172,7 @@ body {
   width: 100%;
   cursor: pointer;
   font-family: var(--ls-font);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--ls-gray-400);
   transition: all .15s;
@@ -183,8 +184,8 @@ body {
 
 /* â”€â”€ Carte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-card {
-  background: var(--ls-white);
-  border: 1px solid var(--ls-gray-200);
+  background: var(--ls-fond-carte);
+  border: 1px solid #C8F0C8;
   border-radius: var(--ls-radius-md);
   padding: 14px;
   cursor: pointer;
@@ -208,9 +209,9 @@ body {
 
 /* Badge prioritÃ© */
 .ls-badge-prio {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 20px;
   text-transform: capitalize;
 }
@@ -237,7 +238,7 @@ body {
 
 /* Titre */
 .ls-card-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ls-violet);
   margin-bottom: 10px;
@@ -255,14 +256,14 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ls-gray-400);
   flex-wrap: wrap;
 }
 .ls-card-field-label {
   font-weight: 600;
   color: var(--ls-gray-600);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 /* Ligne basse : date + avatar */
@@ -279,7 +280,7 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ls-gray-400);
 }
 .ls-card-date svg { flex-shrink: 0; }
@@ -291,7 +292,7 @@ body {
   border-radius: 50%;
   background: var(--ls-violet);
   color: white;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -323,7 +324,7 @@ body {
   border: none;
   cursor: pointer;
   font-family: var(--ls-font);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ls-gray-600);
   text-align: left;
   transition: background .1s;
@@ -336,9 +337,9 @@ body {
 .ls-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 20px;
   white-space: nowrap;
   max-width: 150px;
@@ -356,7 +357,7 @@ body {
   font-family: var(--ls-font);
 }
 .ls-config-title {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--ls-violet);
   margin-bottom: 20px;
@@ -436,7 +437,7 @@ body {
   text-align: center;
   padding: 40px 20px;
   color: var(--ls-gray-400);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
 }
 
