@@ -1,88 +1,99 @@
 /* ============================================================
-   KANBAN LASUITE â€” widget.css
-   Charte : #271B79 (violet) Â· #B9FFB7 (vert menthe)
-            #16B7C7 (bleu canard) Â· #FBFFFA (fond page)
-            #EDFFED (fond carte) Â· Police : Barlow
+   KANBAN LASUITE.COOP â€” widget.css
+   Style inspirÃ© FourAxis â€” adaptÃ© charte LaSuite
+   #271B79 Â· #B9FFB7 Â· #16B7C7 Â· #FBFFFA Â· Police Barlow
    ============================================================ */
 
-/* â”€â”€ Import Barlow (police LaSuite) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap');
 
-/* â”€â”€ Variables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 :root {
   --ls-violet:      #271B79;
   --ls-violet-dark: #1A1154;
   --ls-violet-soft: #EAE8F5;
   --ls-vert:        #B9FFB7;
-  --ls-vert-dark:   #2DB82A;
   --ls-canard:      #16B7C7;
   --ls-canard-dark: #0E8A97;
   --ls-fond:        #FBFFFA;
-  --ls-fond-carte:  #EDFFED;
   --ls-white:       #FFFFFF;
+  --ls-gray-100:    #F4F4F2;
   --ls-gray-200:    #E2E2DE;
   --ls-gray-400:    #9B9B95;
+  --ls-gray-600:    #5A5A55;
   --ls-danger:      #E03131;
   --ls-danger-soft: #FFF0F0;
 
-  --ls-radius-md:   10px;
-  --ls-radius-lg:   14px;
+  /* PrioritÃ©s */
+  --prio-urgent-bg: #FFE3E3; --prio-urgent-fg: #C92A2A;
+  --prio-high-bg:   #FFE8CC; --prio-high-fg:   #D9480F;
+  --prio-medium-bg: #FFF3BF; --prio-medium-fg: #E67700;
+  --prio-low-bg:    #D3F9D8; --prio-low-fg:    #2F9E44;
 
-  --ls-shadow-col:  0 2px 8px rgba(39,27,121,0.08);
-  --ls-shadow-card: 0 2px 6px rgba(39,27,121,0.10);
+  --ls-radius-sm:   6px;
+  --ls-radius-md:   12px;
+  --ls-radius-lg:   16px;
+
+  --ls-shadow-col:  0 2px 8px rgba(39,27,121,0.07);
+  --ls-shadow-card: 0 4px 12px rgba(39,27,121,0.12);
 
   --ls-font: 'Barlow', system-ui, -apple-system, sans-serif;
 }
 
-/* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
   font-family: var(--ls-font);
   font-size: 14px;
-  color: var(--ls-violet);
-  background: var(--ls-fond);
+  color: var(--ls-gray-600);
+  background: var(--ls-gray-100);
   margin: 0;
   padding: 0;
 }
 
-/* â”€â”€ Layout board â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â”€â”€ Board â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 #ls-board {
   display: flex;
   gap: 14px;
-  padding: 14px;
-  min-height: calc(100vh - 28px);
+  padding: 16px;
+  min-height: calc(100vh - 32px);
   overflow-x: auto;
   align-items: flex-start;
 }
 
-/* â”€â”€ Colonne â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â”€â”€ Colonne â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-col {
   display: flex;
   flex-direction: column;
-  min-width: 280px;
-  max-width: 340px;
+  min-width: 270px;
+  max-width: 310px;
   flex: 1;
   background: var(--ls-white);
   border-radius: var(--ls-radius-lg);
   box-shadow: var(--ls-shadow-col);
-  border: 1px solid var(--ls-gray-200);
   overflow: hidden;
 }
 
+/* En-tÃªte colonne */
 .ls-col-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 11px 16px;
-  background: var(--ls-violet);
-  color: var(--ls-white);
+  gap: 8px;
+  padding: 13px 14px 10px;
+  background: var(--ls-white);
+  border-bottom: 1px solid var(--ls-gray-100);
+}
+
+/* Point colorÃ© */
+.ls-col-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .ls-col-header-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: .01em;
+  color: var(--ls-violet);
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -92,25 +103,33 @@ body {
 .ls-col-counter {
   font-size: 12px;
   font-weight: 500;
-  background: rgba(255,255,255,0.2);
+  color: var(--ls-gray-400);
+  background: var(--ls-gray-100);
   border-radius: 20px;
-  padding: 2px 9px;
-  margin-left: 8px;
-  flex-shrink: 0;
+  padding: 2px 8px;
 }
 
-.ls-col-toggle {
+.ls-col-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.ls-col-btn {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.7);
   cursor: pointer;
-  padding: 0 0 0 10px;
-  font-size: 15px;
+  color: var(--ls-gray-400);
+  font-size: 16px;
   line-height: 1;
-  transition: color .15s;
-  flex-shrink: 0;
+  padding: 2px 4px;
+  border-radius: var(--ls-radius-sm);
+  transition: color .15s, background .15s;
 }
-.ls-col-toggle:hover { color: var(--ls-vert); }
+.ls-col-btn:hover {
+  color: var(--ls-violet);
+  background: var(--ls-gray-100);
+}
 
 /* Colonne collapsed */
 .ls-col.collapsed {
@@ -123,23 +142,33 @@ body {
 .ls-col.collapsed .ls-col-header {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  padding: 16px 12px;
+  padding: 16px 10px;
   min-height: 140px;
+  border-bottom: none;
   justify-content: flex-start;
 }
-.ls-col.collapsed .ls-col-counter { margin-left: 0; margin-bottom: 8px; }
+.ls-col.collapsed .ls-col-actions { display: none; }
 
-/* â”€â”€ Bouton ajouter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Zone cartes */
+.ls-col-body {
+  flex: 1;
+  padding: 10px;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Bouton ajouter */
 .ls-col-add {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 9px 16px;
+  padding: 10px 14px;
   background: none;
   border: none;
-  border-top: 1px solid var(--ls-gray-200);
+  border-top: 1px solid var(--ls-gray-100);
   width: 100%;
-  text-align: left;
   cursor: pointer;
   font-family: var(--ls-font);
   font-size: 13px;
@@ -152,122 +181,180 @@ body {
   background: var(--ls-violet-soft);
 }
 
-/* â”€â”€ Zone cartes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.ls-col-body {
-  flex: 1;
-  padding: 10px;
-  min-height: 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* â”€â”€ Carte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â”€â”€ Carte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-card {
-  background: var(--ls-fond-carte);   /* #EDFFED */
-  border: 1px solid #C8F0C8;
+  background: var(--ls-white);
+  border: 1px solid var(--ls-gray-200);
   border-radius: var(--ls-radius-md);
-  padding: 12px 14px;
+  padding: 14px;
   cursor: pointer;
-  transition: box-shadow .15s, transform .1s, border-color .15s;
+  transition: box-shadow .15s, transform .1s;
   position: relative;
 }
 .ls-card:hover {
   box-shadow: var(--ls-shadow-card);
-  border-color: var(--ls-canard);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
-.ls-card.sortable-ghost {
-  opacity: .4;
-  background: var(--ls-violet-soft);
-}
-.ls-card.sortable-drag {
-  box-shadow: 0 8px 24px rgba(39,27,121,0.18);
-}
+.ls-card.sortable-ghost { opacity: .35; background: var(--ls-violet-soft); }
+.ls-card.sortable-drag  { box-shadow: 0 8px 24px rgba(39,27,121,0.18); }
 
-/* Titre de la carte */
-.ls-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ls-violet);        /* #271B79 */
+/* Ligne haute : prioritÃ© + menu */
+.ls-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 8px;
-  line-height: 1.4;
 }
 
-/* Champs de la carte */
+/* Badge prioritÃ© */
+.ls-badge-prio {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+.ls-badge-prio.urgent { background: var(--prio-urgent-bg); color: var(--prio-urgent-fg); }
+.ls-badge-prio.high   { background: var(--prio-high-bg);   color: var(--prio-high-fg); }
+.ls-badge-prio.medium { background: var(--prio-medium-bg); color: var(--prio-medium-fg); }
+.ls-badge-prio.low    { background: var(--prio-low-bg);    color: var(--prio-low-fg); }
+
+/* Menu carte */
+.ls-card-menu {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ls-gray-400);
+  font-size: 16px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity .15s, color .15s;
+  line-height: 1;
+}
+.ls-card:hover .ls-card-menu { opacity: 1; }
+.ls-card-menu:hover { color: var(--ls-violet); }
+
+/* Titre */
+.ls-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ls-violet);
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+
+/* Champs extras */
 .ls-card-fields {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-bottom: 10px;
 }
-
 .ls-card-field {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--ls-canard);        /* #16B7C7 */
+  gap: 5px;
+  font-size: 12px;
+  color: var(--ls-gray-400);
   flex-wrap: wrap;
 }
-
 .ls-card-field-label {
   font-weight: 600;
-  color: var(--ls-violet);        /* #271B79 */
-  flex-shrink: 0;
-  font-size: 12px;
+  color: var(--ls-gray-600);
+  font-size: 11px;
 }
 
-/* â”€â”€ Badges (Choice, Ref) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Ligne basse : date + avatar */
+.ls-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ls-gray-100);
+}
+
+.ls-card-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--ls-gray-400);
+}
+.ls-card-date svg { flex-shrink: 0; }
+
+/* Avatar initiales */
+.ls-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ls-violet);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+/* Popup menu suppression */
+.ls-card-dropdown {
+  position: absolute;
+  top: 32px;
+  right: 10px;
+  background: var(--ls-white);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--ls-radius-md);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 100;
+  min-width: 140px;
+  overflow: hidden;
+}
+.ls-card-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ls-font);
+  font-size: 13px;
+  color: var(--ls-gray-600);
+  text-align: left;
+  transition: background .1s;
+}
+.ls-card-dropdown button:hover { background: var(--ls-gray-100); }
+.ls-card-dropdown button.danger { color: var(--ls-danger); }
+.ls-card-dropdown button.danger:hover { background: var(--ls-danger-soft); }
+
+/* â”€â”€ Badges Choice / Ref â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   padding: 2px 8px;
   border-radius: 20px;
   white-space: nowrap;
-  max-width: 160px;
+  max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.ls-badge-default {
-  background: var(--ls-violet-soft);
-  color: var(--ls-violet);
-}
-.ls-badge-ref {
-  background: #E0F7FA;
-  color: var(--ls-canard-dark);
-}
+.ls-badge-default { background: var(--ls-violet-soft); color: var(--ls-violet); }
+.ls-badge-ref     { background: #E0F7FA; color: var(--ls-canard-dark); }
 
-/* â”€â”€ Bouton supprimer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.ls-card-delete {
-  position: absolute;
-  top: 9px;
-  right: 9px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--ls-gray-200);
-  font-size: 13px;
-  padding: 3px;
-  border-radius: 4px;
-  opacity: 0;
-  transition: opacity .15s, color .15s, background .15s;
-}
-.ls-card:hover .ls-card-delete { opacity: 1; }
-.ls-card-delete:hover {
-  color: var(--ls-danger);
-  background: var(--ls-danger-soft);
-}
-
-/* â”€â”€ Panneau de config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 #ls-config {
   padding: 20px;
   background: var(--ls-fond);
   min-height: 100vh;
   font-family: var(--ls-font);
 }
-
 .ls-config-title {
   font-size: 16px;
   font-weight: 600;
@@ -277,9 +364,7 @@ body {
   align-items: center;
   gap: 8px;
 }
-
 .ls-config-section { margin-bottom: 22px; }
-
 .ls-config-label {
   font-size: 11px;
   font-weight: 700;
@@ -288,7 +373,6 @@ body {
   letter-spacing: .08em;
   margin-bottom: 10px;
 }
-
 .ls-config-row {
   display: flex;
   align-items: center;
@@ -299,15 +383,11 @@ body {
   color: var(--ls-violet);
 }
 .ls-config-row:last-child { border-bottom: none; }
-
 .ls-config-row input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+  width: 16px; height: 16px;
   accent-color: var(--ls-violet);
-  cursor: pointer;
-  flex-shrink: 0;
+  cursor: pointer; flex-shrink: 0;
 }
-
 .ls-config-select {
   width: 100%;
   padding: 8px 10px;
@@ -324,8 +404,6 @@ body {
   border-color: var(--ls-canard);
   box-shadow: 0 0 0 2px rgba(22,183,199,.15);
 }
-
-/* â”€â”€ Toggle readonly â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-toggle-row {
   display: flex;
   align-items: center;
@@ -337,26 +415,23 @@ body {
 .ls-toggle { position: relative; width: 36px; height: 20px; }
 .ls-toggle input { opacity: 0; width: 0; height: 0; }
 .ls-toggle-slider {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: var(--ls-gray-200);
-  border-radius: 20px;
-  cursor: pointer;
+  border-radius: 20px; cursor: pointer;
   transition: background .2s;
 }
 .ls-toggle-slider::before {
   content: '';
   position: absolute;
   width: 14px; height: 14px;
-  background: white;
-  border-radius: 50%;
+  background: white; border-radius: 50%;
   top: 3px; left: 3px;
   transition: transform .2s;
 }
 .ls-toggle input:checked + .ls-toggle-slider { background: var(--ls-violet); }
 .ls-toggle input:checked + .ls-toggle-slider::before { transform: translateX(16px); }
 
-/* â”€â”€ Ã‰tat vide â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â”€â”€ Ã‰tat vide â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-empty {
   text-align: center;
   padding: 40px 20px;
@@ -365,10 +440,7 @@ body {
   line-height: 1.7;
 }
 
-/* â”€â”€ Scrollbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â”€â”€ Scrollbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 #ls-board::-webkit-scrollbar { height: 6px; }
 #ls-board::-webkit-scrollbar-track { background: transparent; }
-#ls-board::-webkit-scrollbar-thumb {
-  background: var(--ls-gray-200);
-  border-radius: 3px;
-}
+#ls-board::-webkit-scrollbar-thumb { background: var(--ls-gray-200); border-radius: 3px; }
