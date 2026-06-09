@@ -24,56 +24,68 @@ grist.ready({
   async onEditOptions() { _showConfig(); }
 });
 
-/* ── Chargement des métadonnées ───────────────────────────────── */
-async function _loadColsMeta() {
+/* ── Trouver le tableId via la colonne STATUT mappée ──────────── */
+async function _resolveTableId() {
+  if (!_statusColId) return;
   try {
-    /* 1. Récupérer l'ID de la table courante */
-    const tableInfo = await grist.getTable();
-    _tableId = tableInfo.tableId || tableInfo._tableId || null;
-    console.log('[kanban] tableId =', _tableId);
-
-    /* 2. Récupérer toutes les tables et toutes les colonnes */
     const tablesData = await grist.docApi.fetchTable('_grist_Tables');
     const colsData   = await grist.docApi.fetchTable('_grist_Tables_column');
 
-    console.log('[kanban] tables trouvées :', tablesData.tableId);
-
-    /* 3. Trouver la référence interne (id) de notre table */
-    let tableRef = null;
-    if (_tableId) {
-      const idx = tablesData.tableId.indexOf(_tableId);
-      if (idx !== -1) tableRef = tablesData.id[idx];
+    /* Chercher la table qui possède une colonne avec le colId = _statusColId */
+    for (let i = 0; i < colsData.id.length; i++) {
+      if (colsData.colId[i] === _statusColId) {
+        const parentRef = colsData.parentId[i];
+        const tIdx = tablesData.id.indexOf(parentRef);
+        if (tIdx !== -1 && !tablesData.tableId[tIdx].startsWith('_grist')) {
+          _tableId = tablesData.tableId[tIdx];
+          console.log('[kanban] tableId résolu =', _tableId);
+          return;
+        }
+      }
     }
-    console.log('[kanban] tableRef =', tableRef);
+    console.warn('[kanban] tableId non trouvé pour colId =', _statusColId);
+  } catch(e) {
+    console.warn('[kanban] _resolveTableId:', e);
+  }
+}
 
-    /* 4. Construire la liste des colonnes avec leurs métadonnées */
-    const allCols = colsData.id.map((id, i) => ({
-      id,
-      parentId:      colsData.parentId ? colsData.parentId[i] : null,
-      colId:         colsData.colId[i],
-      label:         colsData.label[i] || colsData.colId[i],
-      type:          colsData.type[i]  || 'Text',
-      widgetOptions: colsData.widgetOptions ? colsData.widgetOptions[i] : null,
-    }));
+/* ── Chargement des métadonnées de colonnes ───────────────────── */
+async function _loadColsMeta() {
+  try {
+    const tablesData = await grist.docApi.fetchTable('_grist_Tables');
+    const colsData   = await grist.docApi.fetchTable('_grist_Tables_column');
 
-    /* 5. Filtrer sur notre table (ou garder tout si parentId indisponible) */
-    _colsMeta = allCols.filter(c => {
-      if (!c.colId || c.colId.startsWith('gristHelper') || c.colId === 'manualSort') return false;
-      if (tableRef !== null && c.parentId !== null) return c.parentId === tableRef;
-      return true;
-    });
+    /* Trouver la ref interne de notre table */
+    const tIdx    = tablesData.tableId.indexOf(_tableId);
+    const tableRef = tIdx !== -1 ? tablesData.id[tIdx] : null;
+    console.log('[kanban] tableRef =', tableRef, 'pour', _tableId);
 
-    console.log('[kanban] colonnes chargées :', _colsMeta.map(c => c.colId));
+    /* Construire les métadonnées en filtrant sur notre table */
+    _colsMeta = colsData.id
+      .map((id, i) => ({
+        id,
+        parentId:      colsData.parentId ? colsData.parentId[i] : null,
+        colId:         colsData.colId[i],
+        label:         colsData.label[i] || colsData.colId[i],
+        type:          colsData.type[i]  || 'Text',
+        widgetOptions: colsData.widgetOptions ? colsData.widgetOptions[i] : null,
+      }))
+      .filter(c => {
+        if (!c.colId || c.colId.startsWith('gristHelper') || c.colId === 'manualSort') return false;
+        if (tableRef !== null && c.parentId !== null) return c.parentId === tableRef;
+        return true;
+      });
 
-    /* 6. Log des widgetOptions de la colonne Statut pour debug */
-    const statusMeta = _colsMeta.find(c => c.colId === _statusColId);
-    if (statusMeta) {
-      console.log('[kanban] Statut widgetOptions =', statusMeta.widgetOptions);
-    }
+    console.log('[kanban] colonnes :', _colsMeta.map(c => c.colId));
+
+    /* Log des widgetOptions de Statut */
+    const sm = _colsMeta.find(c => c.colId === _statusColId);
+    if (sm) console.log('[kanban] Statut widgetOptions =', sm.widgetOptions);
+    else console.warn('[kanban] colonne Statut non trouvée dans colsMeta');
 
     Config.setColsMeta(_colsMeta);
-  } catch (e) {
-    console.warn('[kanban] _loadColsMeta erreur :', e);
+  } catch(e) {
+    console.warn('[kanban] _loadColsMeta:', e);
   }
 }
 
@@ -87,9 +99,11 @@ grist.onOptions((opts) => {
 grist.onRecords(async (records, mappings) => {
   _mappings    = mappings || {};
   _statusColId = _mappings['STATUT'] || null;
-  console.log('[kanban] mappings =', _mappings, '| statusColId =', _statusColId);
+  console.log('[kanban] statusColId =', _statusColId);
 
-  await _loadColsMeta();   /* recharger à chaque update pour être sûr */
+  /* Résoudre le tableId depuis la colonne STATUT mappée */
+  await _resolveTableId();
+  await _loadColsMeta();
 
   _records = records;
   _render();
@@ -112,22 +126,19 @@ async function _render() {
   }
 
   const statusMeta = _colsMeta.find(c => c.colId === _statusColId);
-  console.log('[kanban] statusMeta =', statusMeta);
-
-  const choices = _getChoices(statusMeta);
+  const choices    = _getChoices(statusMeta);
   console.log('[kanban] choices =', choices);
 
   if (!choices.length) {
     board.innerHTML = `<div class="ls-empty">
-      La colonne Statut ne contient pas encore de valeurs Choice.
-      Ajoutez des choix directement dans Grist.
+      La colonne Statut ne contient pas encore de valeurs Choice.<br>
+      Ajoutez des choix directement dans Grist sur la colonne <strong>Statut</strong>
+      de la table <strong>${_tableId || 'source'}</strong>.
     </div>`;
     return;
   }
 
-  choices.forEach(choice => {
-    board.appendChild(_buildColumn(choice, statusMeta));
-  });
+  choices.forEach(choice => board.appendChild(_buildColumn(choice, statusMeta)));
 
   _records.forEach(rec => {
     const statut = rec[_statusColId] ?? rec['STATUT'];
@@ -150,7 +161,7 @@ async function _render() {
             await grist.docApi.applyUserActions([[
               'UpdateRecord', _tableId, recId, { [_statusColId]: newStatut }
             ]]);
-          } catch (e) { console.error('[kanban] UpdateRecord:', e); }
+          } catch(e) { console.error('[kanban] UpdateRecord:', e); }
           board.querySelectorAll('.ls-col').forEach(_updateCounter);
         }
       });
@@ -252,7 +263,7 @@ function _buildCard(rec) {
       if (!confirm(`Supprimer "${titleVal}" ? Cette action est irréversible.`)) return;
       try {
         await grist.docApi.applyUserActions([['RemoveRecord', _tableId, rec.id]]);
-      } catch (err) { console.error('[kanban] RemoveRecord:', err); }
+      } catch(err) { console.error('[kanban] RemoveRecord:', err); }
     });
     card.appendChild(delBtn);
   }
@@ -263,12 +274,15 @@ function _buildCard(rec) {
 
 /* ── Ajout d'un enregistrement ────────────────────────────────── */
 async function _addRecord(statut) {
-  if (!_tableId || !_statusColId) return;
+  if (!_tableId || !_statusColId) {
+    console.error('[kanban] _addRecord: tableId ou statusColId manquant', _tableId, _statusColId);
+    return;
+  }
   try {
     await grist.docApi.applyUserActions([[
       'AddRecord', _tableId, null, { [_statusColId]: statut }
     ]]);
-  } catch (e) { console.error('[kanban] AddRecord:', e); }
+  } catch(e) { console.error('[kanban] AddRecord:', e); }
 }
 
 /* ── Panneau de config ────────────────────────────────────────── */
@@ -278,44 +292,46 @@ function _showConfig() {
   Config.render(document.getElementById('ls-config'));
 }
 
-/* ── _getChoices : extrait les valeurs depuis widgetOptions ────── */
+/* ── Extraire les choix depuis widgetOptions ──────────────────── */
 function _getChoices(colMeta) {
   if (!colMeta) { console.warn('[kanban] _getChoices: colMeta null'); return []; }
 
   let wo = null;
   if (colMeta.widgetOptions) {
-    wo = typeof colMeta.widgetOptions === 'string'
-      ? JSON.parse(colMeta.widgetOptions)
-      : colMeta.widgetOptions;
+    try {
+      wo = typeof colMeta.widgetOptions === 'string'
+        ? JSON.parse(colMeta.widgetOptions)
+        : colMeta.widgetOptions;
+    } catch(e) { console.warn('[kanban] widgetOptions parse error', e); }
   }
 
-  console.log('[kanban] _getChoices wo =', wo);
+  if (!wo) { console.warn('[kanban] widgetOptions vide ou null'); return []; }
 
-  /* Format 1 : choicesById (Grist récent) */
-  if (wo?.choicesById && typeof wo.choicesById === 'object') {
+  /* Format 1 : choicesById */
+  if (wo.choicesById && typeof wo.choicesById === 'object') {
     const vals = Object.values(wo.choicesById)
       .map(c => ({ label: c.label ?? c.value ?? '' }))
       .filter(c => c.label);
     if (vals.length) return vals;
   }
 
-  /* Format 2 : choices tableau (Grist classique) */
-  if (Array.isArray(wo?.choices)) {
+  /* Format 2 : choices[] */
+  if (Array.isArray(wo.choices)) {
     const vals = wo.choices
       .map(c => typeof c === 'string' ? { label: c } : { label: c.label ?? c.value ?? '' })
       .filter(c => c.label);
     if (vals.length) return vals;
   }
 
-  /* Format 3 : choiceOptions objet clé→{fillColor} */
-  if (wo?.choiceOptions && typeof wo.choiceOptions === 'object') {
+  /* Format 3 : choiceOptions{} */
+  if (wo.choiceOptions && typeof wo.choiceOptions === 'object') {
     const vals = Object.keys(wo.choiceOptions)
       .map(k => ({ label: k }))
       .filter(c => c.label);
     if (vals.length) return vals;
   }
 
-  console.warn('[kanban] _getChoices: aucun format reconnu dans', wo);
+  console.warn('[kanban] _getChoices: aucun format reconnu', wo);
   return [];
 }
 
