@@ -1,0 +1,366 @@
+/* ============================================================
+   KANBAN LASUITE.COOP — widget.css
+   Charte graphique : #271B79 (violet) · #B9FFB7 (vert menthe)
+                      #16B7C7 (bleu canard) · #FBFFFA (fond)
+   ============================================================ */
+
+/* ── Variables ─────────────────────────────────────────────── */
+:root {
+  --ls-violet:      #271B79;
+  --ls-violet-dark: #1A1154;
+  --ls-violet-soft: #EAE8F5;
+  --ls-vert:        #B9FFB7;
+  --ls-vert-dark:   #2DB82A;
+  --ls-canard:      #16B7C7;
+  --ls-canard-dark: #0E8A97;
+  --ls-fond:        #FBFFFA;
+  --ls-white:       #FFFFFF;
+  --ls-gray-100:    #F4F4F2;
+  --ls-gray-200:    #E2E2DE;
+  --ls-gray-400:    #9B9B95;
+  --ls-gray-700:    #3D3D39;
+  --ls-danger:      #E03131;
+  --ls-danger-soft: #FFF0F0;
+
+  --ls-radius-sm:   6px;
+  --ls-radius-md:   10px;
+  --ls-radius-lg:   14px;
+
+  --ls-shadow-card: 0 1px 3px rgba(39,27,121,0.08);
+  --ls-shadow-col:  0 2px 8px rgba(39,27,121,0.07);
+
+  --ls-font: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Reset de base ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--ls-font);
+  font-size: 13px;
+  color: var(--ls-gray-700);
+  background: var(--ls-fond);
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Layout board ───────────────────────────────────────────── */
+#ls-board {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  min-height: calc(100vh - 24px);
+  overflow-x: auto;
+  align-items: flex-start;
+}
+
+/* ── Colonne ────────────────────────────────────────────────── */
+.ls-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  max-width: 320px;
+  flex: 1;
+  background: var(--ls-white);
+  border-radius: var(--ls-radius-lg);
+  box-shadow: var(--ls-shadow-col);
+  border: 0.5px solid var(--ls-gray-200);
+  overflow: hidden;
+}
+
+.ls-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--ls-violet);
+  color: var(--ls-white);
+  border-bottom: 3px solid transparent;
+}
+
+.ls-col-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ls-col-counter {
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255,255,255,0.18);
+  border-radius: 20px;
+  padding: 1px 8px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.ls-col-toggle {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  padding: 0 0 0 8px;
+  font-size: 14px;
+  line-height: 1;
+  transition: color .15s;
+  flex-shrink: 0;
+}
+.ls-col-toggle:hover { color: var(--ls-vert); }
+
+/* Colonne collapsed */
+.ls-col.collapsed {
+  min-width: 48px;
+  max-width: 48px;
+  flex: none;
+}
+.ls-col.collapsed .ls-col-body,
+.ls-col.collapsed .ls-col-add { display: none; }
+.ls-col.collapsed .ls-col-header {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  padding: 14px 10px;
+  min-height: 120px;
+  border-bottom: none;
+  border-right: 3px solid transparent;
+}
+.ls-col.collapsed .ls-col-header-title { margin-bottom: 6px; }
+.ls-col.collapsed .ls-col-counter { margin-left: 0; margin-bottom: 6px; }
+
+/* ── Bouton ajouter ─────────────────────────────────────────── */
+.ls-col-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  border-top: 0.5px solid var(--ls-gray-200);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ls-gray-400);
+  transition: all .15s;
+}
+.ls-col-add:hover { color: var(--ls-violet); background: var(--ls-violet-soft); }
+
+/* ── Zone de cartes ─────────────────────────────────────────── */
+.ls-col-body {
+  flex: 1;
+  padding: 8px;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Carte ──────────────────────────────────────────────────── */
+.ls-card {
+  background: var(--ls-fond);
+  border: 0.5px solid var(--ls-gray-200);
+  border-radius: var(--ls-radius-md);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: box-shadow .15s, transform .1s, border-color .15s;
+  position: relative;
+}
+.ls-card:hover {
+  box-shadow: var(--ls-shadow-card);
+  border-color: var(--ls-canard);
+  transform: translateY(-1px);
+}
+.ls-card.sortable-ghost {
+  opacity: .4;
+  background: var(--ls-violet-soft);
+}
+.ls-card.sortable-drag { box-shadow: 0 6px 20px rgba(39,27,121,0.18); }
+
+.ls-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ls-violet-dark);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.ls-card-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ls-card-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--ls-gray-400);
+}
+
+.ls-card-field-label {
+  font-weight: 500;
+  color: var(--ls-gray-400);
+  flex-shrink: 0;
+}
+
+/* ── Badges (Choice, Ref) ───────────────────────────────────── */
+.ls-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ls-badge-default {
+  background: var(--ls-violet-soft);
+  color: var(--ls-violet);
+}
+.ls-badge-ref {
+  background: #E0F7FA;
+  color: var(--ls-canard-dark);
+}
+
+/* ── Bouton supprimer ───────────────────────────────────────── */
+.ls-card-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ls-gray-200);
+  font-size: 13px;
+  line-height: 1;
+  padding: 2px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity .15s, color .15s, background .15s;
+}
+.ls-card:hover .ls-card-delete { opacity: 1; }
+.ls-card-delete:hover { color: var(--ls-danger); background: var(--ls-danger-soft); }
+
+/* ── Panneau de config ──────────────────────────────────────── */
+#ls-config {
+  padding: 16px;
+  background: var(--ls-fond);
+  min-height: 100vh;
+}
+
+.ls-config-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ls-violet);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ls-config-section {
+  margin-bottom: 20px;
+}
+
+.ls-config-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ls-gray-400);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 8px;
+}
+
+.ls-config-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 0.5px solid var(--ls-gray-200);
+  font-size: 13px;
+}
+.ls-config-row:last-child { border-bottom: none; }
+
+.ls-config-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--ls-violet);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ls-config-select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 0.5px solid var(--ls-gray-200);
+  border-radius: var(--ls-radius-sm);
+  background: var(--ls-white);
+  font-size: 13px;
+  color: var(--ls-gray-700);
+  cursor: pointer;
+}
+.ls-config-select:focus {
+  outline: none;
+  border-color: var(--ls-canard);
+  box-shadow: 0 0 0 2px rgba(22,183,199,.15);
+}
+
+/* ── Toggle readonly ────────────────────────────────────────── */
+.ls-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.ls-toggle {
+  position: relative;
+  width: 34px;
+  height: 19px;
+}
+.ls-toggle input { opacity: 0; width: 0; height: 0; }
+.ls-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--ls-gray-200);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.ls-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform .2s;
+}
+.ls-toggle input:checked + .ls-toggle-slider { background: var(--ls-violet); }
+.ls-toggle input:checked + .ls-toggle-slider::before { transform: translateX(15px); }
+
+/* ── État vide ──────────────────────────────────────────────── */
+.ls-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--ls-gray-400);
+  font-size: 12px;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+#ls-board::-webkit-scrollbar { height: 6px; }
+#ls-board::-webkit-scrollbar-track { background: transparent; }
+#ls-board::-webkit-scrollbar-thumb {
+  background: var(--ls-gray-200);
+  border-radius: 3px;
+}
