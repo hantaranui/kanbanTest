@@ -1,4 +1,4 @@
-/* widget.js — Logique principale du Kanban LaSuite.coop */
+/* widget.js — Logique principale du Kanban */
 
 /* ── État global ──────────────────────────────────────────────── */
 let _records     = [];
