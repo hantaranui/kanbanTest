@@ -336,7 +336,7 @@ function _buildCard(rec) {
     const dateVal = rec[dateColId];
     if (!Render.isNil(dateVal)) {
       const dateMeta  = _colsMeta.find(c => c.colId === dateColId);
-      const dateLabel = statut; /* ex: "En cours" */
+      const dateLabel = 'Date'; 
       fieldsEl.innerHTML += Render.field(dateLabel, dateMeta, 'DateTime', dateVal);
     }
   }
