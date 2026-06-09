@@ -24,30 +24,56 @@ grist.ready({
   async onEditOptions() { _showConfig(); }
 });
 
-/* ── Trouver le tableId via la colonne STATUT mappée ──────────── */
+/* ── Trouver le tableId via la table sélectionnée dans Grist ──── */
 async function _resolveTableId() {
-  if (!_statusColId) return;
+  /* Méthode 1 : grist.selectedTable (la plus fiable) */
+  try {
+    const t = grist.selectedTable;
+    if (t && t.getTableId) {
+      _tableId = await t.getTableId();
+      console.log('[kanban] tableId via selectedTable =', _tableId);
+      return;
+    }
+  } catch(e) { console.warn('[kanban] selectedTable:', e); }
+
+  /* Méthode 2 : grist.getTable() */
+  try {
+    const info = await grist.getTable();
+    const tid  = info.tableId || info._tableId || null;
+    if (tid && !tid.startsWith('_grist')) {
+      _tableId = tid;
+      console.log('[kanban] tableId via getTable =', _tableId);
+      return;
+    }
+  } catch(e) { console.warn('[kanban] getTable:', e); }
+
+  /* Méthode 3 : croiser colonnes des records reçus avec _grist_Tables_column */
   try {
     const tablesData = await grist.docApi.fetchTable('_grist_Tables');
     const colsData   = await grist.docApi.fetchTable('_grist_Tables_column');
+    const recCols    = _records.length > 0 ? Object.keys(_records[0]) : [];
+    console.log('[kanban] colonnes dans records =', recCols);
 
-    /* Chercher la table qui possède une colonne avec le colId = _statusColId */
-    for (let i = 0; i < colsData.id.length; i++) {
-      if (colsData.colId[i] === _statusColId) {
-        const parentRef = colsData.parentId[i];
-        const tIdx = tablesData.id.indexOf(parentRef);
-        if (tIdx !== -1 && !tablesData.tableId[tIdx].startsWith('_grist')) {
-          _tableId = tablesData.tableId[tIdx];
-          console.log('[kanban] tableId résolu =', _tableId);
-          return;
-        }
-      }
+    const tableIds = [...new Set(tablesData.tableId.filter(t => !t.startsWith('_grist')))];
+    let bestTable = null, bestOverlap = 0;
+
+    for (const tid of tableIds) {
+      const tIdx  = tablesData.tableId.indexOf(tid);
+      const tRef  = tablesData.id[tIdx];
+      const tCols = colsData.colId.filter((_, i) => colsData.parentId[i] === tRef);
+      if (!tCols.includes(_statusColId)) continue;
+      const overlap = tCols.filter(c => recCols.includes(c)).length;
+      console.log('[kanban] table', tid, '— overlap =', overlap);
+      if (overlap > bestOverlap) { bestOverlap = overlap; bestTable = tid; }
     }
-    console.warn('[kanban] tableId non trouvé pour colId =', _statusColId);
-  } catch(e) {
-    console.warn('[kanban] _resolveTableId:', e);
-  }
+
+    if (bestTable) {
+      _tableId = bestTable;
+      console.log('[kanban] tableId résolu via overlap =', _tableId);
+    }
+  } catch(e) { console.warn('[kanban] _resolveTableId:', e); }
 }
+
 
 /* ── Chargement des métadonnées de colonnes ───────────────────── */
 async function _loadColsMeta() {
