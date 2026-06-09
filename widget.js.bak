@@ -1,95 +1,81 @@
-/* widget.js — Logique principale du Kanban LaSuite.coop */
+/* widget.js — Logique principale du Kanban LaSuite.coop
+   Sources : Varamil (structure, DnD, getChoices/colors)
+             Élodie Gateau (setCursorPos, renderFieldValue)
+             Éric Couillard (RemoveRecord + confirm)
+*/
 
 /* ── État global ──────────────────────────────────────────────── */
-let _records     = [];
-let _colsMeta    = [];
-let _tableId     = null;
-let _statusColId = null;
-let _mappings    = {};
+let _records    = [];      // snapshot onRecords
+let _colsMeta   = [];      // snapshot _grist_Tables_column
+let _tableId    = null;    // ID de la table source
+let _statusColId = null;   // colId mappé comme STATUT
+let _mappings   = {};      // { name: colId } depuis grist.ready columns
 
 /* ── Bootstrap Grist ──────────────────────────────────────────── */
 grist.ready({
   requiredAccess: 'full',
   allowSelectBy: true,
   columns: [
-    { name: 'STATUT',  title: 'Statut',   type: 'Choice', description: 'Colonne Choice qui définit les colonnes du Kanban' },
-    { name: 'TITRE',   title: 'Titre',    type: 'Any',    description: 'Texte principal affiché sur chaque carte' },
-    { name: 'CHAMP_2', title: 'Champ 2',  type: 'Any',    optional: true },
-    { name: 'CHAMP_3', title: 'Champ 3',  type: 'Any',    optional: true },
-    { name: 'CHAMP_4', title: 'Champ 4',  type: 'Any',    optional: true },
-    { name: 'CHAMP_5', title: 'Champ 5',  type: 'Any',    optional: true },
-    { name: 'CREE_LE', title: 'Créé le',  type: 'DateTime', optional: true },
-    { name: 'CREE_PAR',title: 'Créé par', type: 'Any',    optional: true },
+    { name: 'STATUT',      title: 'Statut',        type: 'Choice',  description: 'Colonne Choice qui définit les colonnes du Kanban' },
+    { name: 'TITRE',       title: 'Titre',          type: 'Any',     description: 'Texte principal affiché sur chaque carte' },
+    { name: 'CHAMP_2',     title: 'Champ 2',        type: 'Any',     optional: true, description: 'Champ optionnel affiché sur les cartes' },
+    { name: 'CHAMP_3',     title: 'Champ 3',        type: 'Any',     optional: true },
+    { name: 'CHAMP_4',     title: 'Champ 4',        type: 'Any',     optional: true },
+    { name: 'CHAMP_5',     title: 'Champ 5',        type: 'Any',     optional: true },
+    { name: 'CREE_LE',     title: 'Créé le',        type: 'DateTime',optional: true },
+    { name: 'CREE_PAR',    title: 'Créé par',       type: 'Any',     optional: true },
   ],
-  async onEditOptions() { _showConfig(); }
+  async onEditOptions() {
+    _showConfig();
+  }
 });
 
-/* ── Chargement des métadonnées ───────────────────────────────── */
+/* ── Chargement des métadonnées de colonnes ────────────────────── */
 async function _loadColsMeta() {
   try {
-    /* 1. Récupérer l'ID de la table courante */
-    const tableInfo = await grist.getTable();
-    _tableId = tableInfo.tableId || tableInfo._tableId || null;
-    console.log('[kanban] tableId =', _tableId);
+    const table = await grist.getTable();
+    _tableId = table._tableId ?? table.tableId ?? null;
 
-    /* 2. Récupérer toutes les tables et toutes les colonnes */
     const tablesData = await grist.docApi.fetchTable('_grist_Tables');
     const colsData   = await grist.docApi.fetchTable('_grist_Tables_column');
 
-    console.log('[kanban] tables trouvées :', tablesData.tableId);
-
-    /* 3. Trouver la référence interne (id) de notre table */
     let tableRef = null;
     if (_tableId) {
       const idx = tablesData.tableId.indexOf(_tableId);
       if (idx !== -1) tableRef = tablesData.id[idx];
     }
-    console.log('[kanban] tableRef =', tableRef);
 
-    /* 4. Construire la liste des colonnes avec leurs métadonnées */
-    const allCols = colsData.id.map((id, i) => ({
-      id,
-      parentId:      colsData.parentId ? colsData.parentId[i] : null,
-      colId:         colsData.colId[i],
-      label:         colsData.label[i] || colsData.colId[i],
-      type:          colsData.type[i]  || 'Text',
-      widgetOptions: colsData.widgetOptions ? colsData.widgetOptions[i] : null,
-    }));
-
-    /* 5. Filtrer sur notre table (ou garder tout si parentId indisponible) */
-    _colsMeta = allCols.filter(c => {
-      if (!c.colId || c.colId.startsWith('gristHelper') || c.colId === 'manualSort') return false;
-      if (tableRef !== null && c.parentId !== null) return c.parentId === tableRef;
-      return true;
-    });
-
-    console.log('[kanban] colonnes chargées :', _colsMeta.map(c => c.colId));
-
-    /* 6. Log des widgetOptions de la colonne Statut pour debug */
-    const statusMeta = _colsMeta.find(c => c.colId === _statusColId);
-    if (statusMeta) {
-      console.log('[kanban] Statut widgetOptions =', statusMeta.widgetOptions);
+    if (tableRef !== null) {
+      _colsMeta = colsData.id
+        .map((id, i) => ({
+          id,
+          colId:         colsData.colId[i],
+          label:         colsData.label[i] || colsData.colId[i],
+          type:          colsData.type[i] || 'Text',
+          widgetOptions: colsData.widgetOptions[i] || null,
+        }))
+        .filter(c => colsData.parentId[i] === tableRef ||
+                     /* fallback si parentId non dispo */ true)
+        .filter(c => c.colId && !c.colId.startsWith('gristHelper'));
     }
-
     Config.setColsMeta(_colsMeta);
   } catch (e) {
-    console.warn('[kanban] _loadColsMeta erreur :', e);
+    console.warn('[kanban] _loadColsMeta:', e);
   }
 }
 
 /* ── Écoute des options ────────────────────────────────────────── */
-grist.onOptions((opts) => {
+grist.onOptions((opts, interaction) => {
   Config.onOptions(opts, () => _render());
   _render();
 });
 
 /* ── Écoute des records ────────────────────────────────────────── */
 grist.onRecords(async (records, mappings) => {
-  _mappings    = mappings || {};
+  _mappings = mappings || {};
   _statusColId = _mappings['STATUT'] || null;
-  console.log('[kanban] mappings =', _mappings, '| statusColId =', _statusColId);
 
-  await _loadColsMeta();   /* recharger à chaque update pour être sûr */
+  if (_colsMeta.length === 0) await _loadColsMeta();
 
   _records = records;
   _render();
@@ -99,6 +85,7 @@ grist.onRecords(async (records, mappings) => {
 async function _render() {
   const board  = document.getElementById('ls-board');
   const cfgDiv = document.getElementById('ls-config');
+
   board.innerHTML  = '';
   cfgDiv.innerHTML = '';
 
@@ -112,10 +99,7 @@ async function _render() {
   }
 
   const statusMeta = _colsMeta.find(c => c.colId === _statusColId);
-  console.log('[kanban] statusMeta =', statusMeta);
-
-  const choices = _getChoices(statusMeta);
-  console.log('[kanban] choices =', choices);
+  const choices    = _getChoices(statusMeta);
 
   if (!choices.length) {
     board.innerHTML = `<div class="ls-empty">
@@ -126,40 +110,50 @@ async function _render() {
   }
 
   choices.forEach(choice => {
-    board.appendChild(_buildColumn(choice, statusMeta));
+    const col = _buildColumn(choice, statusMeta);
+    board.appendChild(col);
   });
 
+  /* Distribution des cartes */
   _records.forEach(rec => {
     const statut = rec[_statusColId] ?? rec['STATUT'];
     const zone = board.querySelector(`.ls-col-body[data-statut="${CSS.escape(statut)}"]`);
     if (!zone) return;
-    zone.appendChild(_buildCard(rec));
+    const card = _buildCard(rec);
+    zone.appendChild(card);
     _updateCounter(zone.closest('.ls-col'));
   });
 
+  /* Activation SortableJS si pas readonly */
   if (!Config.isReadonly()) {
     board.querySelectorAll('.ls-col-body').forEach(zone => {
       Sortable.create(zone, {
-        group: 'ls-kanban', animation: 150,
-        ghostClass: 'sortable-ghost', dragClass: 'sortable-drag',
+        group:     'ls-kanban',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        dragClass:  'sortable-drag',
         onEnd: async (evt) => {
-          const recId     = parseInt(evt.item.dataset.recId, 10);
+          const recId    = parseInt(evt.item.dataset.recId, 10);
           const newStatut = evt.to.dataset.statut;
           if (!recId || !newStatut) return;
           try {
             await grist.docApi.applyUserActions([[
-              'UpdateRecord', _tableId, recId, { [_statusColId]: newStatut }
+              'UpdateRecord', _tableId, recId,
+              { [_statusColId]: newStatut }
             ]]);
-          } catch (e) { console.error('[kanban] UpdateRecord:', e); }
+          } catch (e) {
+            console.error('[kanban] UpdateRecord:', e);
+          }
           board.querySelectorAll('.ls-col').forEach(_updateCounter);
         }
       });
     });
   }
 
+  /* Restaurer colonnes collapsed */
   board.querySelectorAll('.ls-col').forEach(col => {
-    if (localStorage.getItem('ls_col_' + col.dataset.colId) === 'collapsed')
-      col.classList.add('collapsed');
+    const key = 'ls_col_' + col.dataset.colId;
+    if (localStorage.getItem(key) === 'collapsed') col.classList.add('collapsed');
     _updateCounter(col);
   });
 }
@@ -167,17 +161,20 @@ async function _render() {
 /* ── Construction d'une colonne ───────────────────────────────── */
 function _buildColumn(choice, statusMeta) {
   const colors = Render.getChoiceColor(statusMeta, choice.label);
-  const bg = colors?.bg || '#271B79';
-  const fg = colors?.fg || '#FFFFFF';
+  const bg  = colors?.bg  || '#271B79';
+  const fg  = colors?.fg  || '#FFFFFF';
+  const accentColor = bg;
 
   const col = document.createElement('div');
   col.className = 'ls-col';
   col.dataset.colId = choice.label;
 
+  /* En-tête avec couleur du Choice */
   const header = document.createElement('div');
   header.className = 'ls-col-header';
   header.style.background = bg;
   header.style.color = fg;
+  header.style.borderBottomColor = accentColor;
   header.innerHTML = `
     <span class="ls-col-header-title">${choice.label}</span>
     <span class="ls-col-counter">(0)</span>
@@ -190,6 +187,7 @@ function _buildColumn(choice, statusMeta) {
       col.classList.contains('collapsed') ? 'collapsed' : 'open');
   });
 
+  /* Zone cartes */
   const body = document.createElement('div');
   body.className = 'ls-col-body';
   body.dataset.statut = choice.label;
@@ -197,6 +195,7 @@ function _buildColumn(choice, statusMeta) {
   col.appendChild(header);
   col.appendChild(body);
 
+  /* Bouton ajouter (si pas readonly) */
   if (!Config.isReadonly()) {
     const addBtn = document.createElement('button');
     addBtn.className = 'ls-col-add';
@@ -214,33 +213,40 @@ function _buildCard(rec) {
   card.className = 'ls-card';
   card.dataset.recId = rec.id;
 
+  /* Titre */
   const titleColId = Config.getTitleCol() || _mappings['TITRE'] || 'TITRE';
   const titleVal   = rec[titleColId] ?? rec['TITRE'] ?? `#${rec.id}`;
 
   const titleEl = document.createElement('div');
   titleEl.className = 'ls-card-title';
-  titleEl.textContent = String(titleVal || '(sans titre)');
+  titleEl.textContent = titleVal || '(sans titre)';
   card.appendChild(titleEl);
 
+  /* Champs configurés */
+  const visibleFields = Config.getVisibleFields();
   const fieldsEl = document.createElement('div');
   fieldsEl.className = 'ls-card-fields';
-  const visibleFields = Config.getVisibleFields();
 
-  ['CHAMP_2','CHAMP_3','CHAMP_4','CHAMP_5','CREE_LE','CREE_PAR'].forEach(name => {
+  const fieldMappings = ['CHAMP_2','CHAMP_3','CHAMP_4','CHAMP_5','CREE_LE','CREE_PAR'];
+  fieldMappings.forEach(name => {
     const colId = _mappings[name];
     if (!colId) return;
     if (visibleFields && !visibleFields.includes(colId)) return;
     if (colId === titleColId || colId === _statusColId) return;
+
     const val = rec[colId];
     if (Render.isNil(val)) return;
+
     const meta      = _colsMeta.find(c => c.colId === colId);
     const fieldType = meta?.type || 'Text';
     const label     = meta?.label || colId;
+
     fieldsEl.innerHTML += Render.field(label, meta, fieldType, val);
   });
 
   card.appendChild(fieldsEl);
 
+  /* Bouton supprimer (si pas readonly) */
   if (!Config.isReadonly()) {
     const delBtn = document.createElement('button');
     delBtn.className = 'ls-card-delete';
@@ -249,15 +255,24 @@ function _buildCard(rec) {
     delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
     delBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
-      if (!confirm(`Supprimer "${titleVal}" ? Cette action est irréversible.`)) return;
+      const titre = titleVal || `carte #${rec.id}`;
+      if (!confirm(`Supprimer "${titre}" ? Cette action est irréversible.`)) return;
       try {
-        await grist.docApi.applyUserActions([['RemoveRecord', _tableId, rec.id]]);
-      } catch (err) { console.error('[kanban] RemoveRecord:', err); }
+        await grist.docApi.applyUserActions([[
+          'RemoveRecord', _tableId, rec.id
+        ]]);
+      } catch (err) {
+        console.error('[kanban] RemoveRecord:', err);
+      }
     });
     card.appendChild(delBtn);
   }
 
-  card.addEventListener('click', () => grist.setCursorPos({ rowId: rec.id }));
+  /* Clic → sélectionne la ligne → fiche liée Grist se met à jour */
+  card.addEventListener('click', () => {
+    grist.setCursorPos({ rowId: rec.id });
+  });
+
   return card;
 }
 
@@ -266,56 +281,45 @@ async function _addRecord(statut) {
   if (!_tableId || !_statusColId) return;
   try {
     await grist.docApi.applyUserActions([[
-      'AddRecord', _tableId, null, { [_statusColId]: statut }
+      'AddRecord', _tableId, null,
+      { [_statusColId]: statut }
     ]]);
-  } catch (e) { console.error('[kanban] AddRecord:', e); }
+  } catch (e) {
+    console.error('[kanban] AddRecord:', e);
+  }
 }
 
-/* ── Panneau de config ────────────────────────────────────────── */
+/* ── Affichage du panneau de config ───────────────────────────── */
 function _showConfig() {
-  document.getElementById('ls-board').style.display  = 'none';
-  document.getElementById('ls-config').style.display = 'block';
-  Config.render(document.getElementById('ls-config'));
+  const board  = document.getElementById('ls-board');
+  const cfgDiv = document.getElementById('ls-config');
+  board.style.display  = 'none';
+  cfgDiv.style.display = 'block';
+  Config.render(cfgDiv);
 }
 
-/* ── _getChoices : extrait les valeurs depuis widgetOptions ────── */
+/* ── Helpers ──────────────────────────────────────────────────── */
+
+/* Extraire les choix depuis les widgetOptions de la colonne */
 function _getChoices(colMeta) {
-  if (!colMeta) { console.warn('[kanban] _getChoices: colMeta null'); return []; }
+  if (!colMeta) return [];
+  const wo = colMeta.widgetOptions
+    ? (typeof colMeta.widgetOptions === 'string'
+        ? JSON.parse(colMeta.widgetOptions)
+        : colMeta.widgetOptions)
+    : null;
+  if (!wo) return [];
 
-  let wo = null;
-  if (colMeta.widgetOptions) {
-    wo = typeof colMeta.widgetOptions === 'string'
-      ? JSON.parse(colMeta.widgetOptions)
-      : colMeta.widgetOptions;
+  if (wo.choicesById) {
+    return Object.values(wo.choicesById).map(c => ({
+      label: c.label ?? c.value ?? '',
+    }));
   }
-
-  console.log('[kanban] _getChoices wo =', wo);
-
-  /* Format 1 : choicesById (Grist récent) */
-  if (wo?.choicesById && typeof wo.choicesById === 'object') {
-    const vals = Object.values(wo.choicesById)
-      .map(c => ({ label: c.label ?? c.value ?? '' }))
-      .filter(c => c.label);
-    if (vals.length) return vals;
+  if (Array.isArray(wo.choices)) {
+    return wo.choices.map(c =>
+      typeof c === 'string' ? { label: c } : { label: c.label ?? c.value ?? '' }
+    );
   }
-
-  /* Format 2 : choices tableau (Grist classique) */
-  if (Array.isArray(wo?.choices)) {
-    const vals = wo.choices
-      .map(c => typeof c === 'string' ? { label: c } : { label: c.label ?? c.value ?? '' })
-      .filter(c => c.label);
-    if (vals.length) return vals;
-  }
-
-  /* Format 3 : choiceOptions objet clé→{fillColor} */
-  if (wo?.choiceOptions && typeof wo.choiceOptions === 'object') {
-    const vals = Object.keys(wo.choiceOptions)
-      .map(k => ({ label: k }))
-      .filter(c => c.label);
-    if (vals.length) return vals;
-  }
-
-  console.warn('[kanban] _getChoices: aucun format reconnu dans', wo);
   return [];
 }
 
