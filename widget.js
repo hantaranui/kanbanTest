@@ -1,4 +1,4 @@
-/* widget.js — Logique principale du Kanban */
+/* widget.js — Logique principale du Kanban LaSuite.coop */
 
 /* ── État global ──────────────────────────────────────────────── */
 let _records     = [];
@@ -18,8 +18,12 @@ grist.ready({
     { name: 'CHAMP_3', title: 'Champ 3',  type: 'Any',    optional: true },
     { name: 'CHAMP_4', title: 'Champ 4',  type: 'Any',    optional: true },
     { name: 'CHAMP_5', title: 'Champ 5',  type: 'Any',    optional: true },
-    { name: 'CREE_LE', title: 'Créé le',  type: 'DateTime', optional: true },
-    { name: 'CREE_PAR',title: 'Créé par', type: 'Any',    optional: true },
+    { name: 'CREE_LE',         title: 'Créé le',         type: 'DateTime', optional: true },
+    { name: 'CREE_PAR',        title: 'Créé par',        type: 'Any',      optional: true },
+    { name: 'DATE_EN_COURS',   title: 'Date En cours',   type: 'DateTime', optional: true },
+    { name: 'DATE_TERMINE',    title: 'Date Terminé',    type: 'DateTime', optional: true },
+    { name: 'DATE_ARCHIVE',    title: 'Date Archivé',    type: 'DateTime', optional: true },
+    { name: 'DATE_ANNULE',     title: 'Date Annulé',     type: 'DateTime', optional: true },
   ],
   async onEditOptions() { _showConfig(); }
 });
@@ -184,8 +188,34 @@ async function _render() {
           const newStatut = evt.to.dataset.statut;
           if (!recId || !newStatut) return;
           try {
+            /* Champs à mettre à jour : statut + date si colonne existe */
+            const fields = { [_statusColId]: newStatut };
+
+            /* Correspondance statut → colonne date */
+            const dateColMap = {
+              'En cours': 'Date_en_cours',
+              'Terminé':  'Date_termine',
+              'Archivé':  'Date_archive',
+              'Annulé':   'Date_annule',
+            };
+
+            const dateColId = dateColMap[newStatut];
+            if (dateColId) {
+              /* Vérifier que la colonne existe dans la table */
+              const dateColExists = _colsMeta.some(c => c.colId === dateColId);
+              if (dateColExists) {
+                /* Vérifier que la date n'est pas déjà remplie */
+                const rec = _records.find(r => r.id === recId);
+                const alreadySet = rec && rec[dateColId];
+                if (!alreadySet) {
+                  /* Stocker en timestamp Unix (secondes) — format DateTime Grist */
+                  fields[dateColId] = Math.floor(Date.now() / 1000);
+                }
+              }
+            }
+
             await grist.docApi.applyUserActions([[
-              'UpdateRecord', _tableId, recId, { [_statusColId]: newStatut }
+              'UpdateRecord', _tableId, recId, fields
             ]]);
           } catch(e) { console.error('[kanban] UpdateRecord:', e); }
           board.querySelectorAll('.ls-col').forEach(_updateCounter);
@@ -263,7 +293,8 @@ function _buildCard(rec) {
   fieldsEl.className = 'ls-card-fields';
   const visibleFields = Config.getVisibleFields();
 
-  ['CHAMP_2','CHAMP_3','CHAMP_4','CHAMP_5','CREE_LE','CREE_PAR'].forEach(name => {
+  ['CHAMP_2','CHAMP_3','CHAMP_4','CHAMP_5','CREE_LE','CREE_PAR',
+   'DATE_EN_COURS','DATE_TERMINE','DATE_ARCHIVE','DATE_ANNULE'].forEach(name => {
     const colId = _mappings[name];
     if (!colId) return;
     if (visibleFields && !visibleFields.includes(colId)) return;
