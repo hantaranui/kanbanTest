@@ -1,10 +1,14 @@
 /* ============================================================
-   KANBAN LASUITE.COOP — widget.css
-   Charte graphique : #271B79 (violet) · #B9FFB7 (vert menthe)
-                      #16B7C7 (bleu canard) · #FBFFFA (fond)
+   KANBAN LASUITE â€” widget.css
+   Charte : #271B79 (violet) Â· #B9FFB7 (vert menthe)
+            #16B7C7 (bleu canard) Â· #FBFFFA (fond page)
+            #EDFFED (fond carte) Â· Police : Barlow
    ============================================================ */
 
-/* ── Variables ─────────────────────────────────────────────── */
+/* â”€â”€ Import Barlow (police LaSuite) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap');
+
+/* â”€â”€ Variables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 :root {
   --ls-violet:      #271B79;
   --ls-violet-dark: #1A1154;
@@ -14,57 +18,55 @@
   --ls-canard:      #16B7C7;
   --ls-canard-dark: #0E8A97;
   --ls-fond:        #FBFFFA;
+  --ls-fond-carte:  #EDFFED;
   --ls-white:       #FFFFFF;
-  --ls-gray-100:    #F4F4F2;
   --ls-gray-200:    #E2E2DE;
   --ls-gray-400:    #9B9B95;
-  --ls-gray-700:    #3D3D39;
   --ls-danger:      #E03131;
   --ls-danger-soft: #FFF0F0;
 
-  --ls-radius-sm:   6px;
   --ls-radius-md:   10px;
   --ls-radius-lg:   14px;
 
-  --ls-shadow-card: 0 1px 3px rgba(39,27,121,0.08);
-  --ls-shadow-col:  0 2px 8px rgba(39,27,121,0.07);
+  --ls-shadow-col:  0 2px 8px rgba(39,27,121,0.08);
+  --ls-shadow-card: 0 2px 6px rgba(39,27,121,0.10);
 
-  --ls-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --ls-font: 'Barlow', system-ui, -apple-system, sans-serif;
 }
 
-/* ── Reset de base ──────────────────────────────────────────── */
+/* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
   font-family: var(--ls-font);
-  font-size: 13px;
-  color: var(--ls-gray-700);
+  font-size: 14px;
+  color: var(--ls-violet);
   background: var(--ls-fond);
   margin: 0;
   padding: 0;
 }
 
-/* ── Layout board ───────────────────────────────────────────── */
+/* â”€â”€ Layout board â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 #ls-board {
   display: flex;
-  gap: 12px;
-  padding: 12px;
-  min-height: calc(100vh - 24px);
+  gap: 14px;
+  padding: 14px;
+  min-height: calc(100vh - 28px);
   overflow-x: auto;
   align-items: flex-start;
 }
 
-/* ── Colonne ────────────────────────────────────────────────── */
+/* â”€â”€ Colonne â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-col {
   display: flex;
   flex-direction: column;
-  min-width: 260px;
-  max-width: 320px;
+  min-width: 280px;
+  max-width: 340px;
   flex: 1;
   background: var(--ls-white);
   border-radius: var(--ls-radius-lg);
   box-shadow: var(--ls-shadow-col);
-  border: 0.5px solid var(--ls-gray-200);
+  border: 1px solid var(--ls-gray-200);
   overflow: hidden;
 }
 
@@ -72,14 +74,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 11px 16px;
   background: var(--ls-violet);
   color: var(--ls-white);
-  border-bottom: 3px solid transparent;
 }
 
 .ls-col-header-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: .01em;
   flex: 1;
@@ -89,11 +90,11 @@ body {
 }
 
 .ls-col-counter {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.2);
   border-radius: 20px;
-  padding: 1px 8px;
+  padding: 2px 9px;
   margin-left: 8px;
   flex-shrink: 0;
 }
@@ -103,8 +104,8 @@ body {
   border: none;
   color: rgba(255,255,255,0.7);
   cursor: pointer;
-  padding: 0 0 0 8px;
-  font-size: 14px;
+  padding: 0 0 0 10px;
+  font-size: 15px;
   line-height: 1;
   transition: color .15s;
   flex-shrink: 0;
@@ -113,8 +114,8 @@ body {
 
 /* Colonne collapsed */
 .ls-col.collapsed {
-  min-width: 48px;
-  max-width: 48px;
+  min-width: 50px;
+  max-width: 50px;
   flex: none;
 }
 .ls-col.collapsed .ls-col-body,
@@ -122,48 +123,51 @@ body {
 .ls-col.collapsed .ls-col-header {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  padding: 14px 10px;
-  min-height: 120px;
-  border-bottom: none;
-  border-right: 3px solid transparent;
+  padding: 16px 12px;
+  min-height: 140px;
+  justify-content: flex-start;
 }
-.ls-col.collapsed .ls-col-header-title { margin-bottom: 6px; }
-.ls-col.collapsed .ls-col-counter { margin-left: 0; margin-bottom: 6px; }
+.ls-col.collapsed .ls-col-counter { margin-left: 0; margin-bottom: 8px; }
 
-/* ── Bouton ajouter ─────────────────────────────────────────── */
+/* â”€â”€ Bouton ajouter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-col-add {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 9px 16px;
   background: none;
   border: none;
-  border-top: 0.5px solid var(--ls-gray-200);
+  border-top: 1px solid var(--ls-gray-200);
   width: 100%;
   text-align: left;
   cursor: pointer;
-  font-size: 12px;
+  font-family: var(--ls-font);
+  font-size: 13px;
+  font-weight: 500;
   color: var(--ls-gray-400);
   transition: all .15s;
 }
-.ls-col-add:hover { color: var(--ls-violet); background: var(--ls-violet-soft); }
+.ls-col-add:hover {
+  color: var(--ls-violet);
+  background: var(--ls-violet-soft);
+}
 
-/* ── Zone de cartes ─────────────────────────────────────────── */
+/* â”€â”€ Zone cartes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-col-body {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
   min-height: 60px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
-/* ── Carte ──────────────────────────────────────────────────── */
+/* â”€â”€ Carte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-card {
-  background: var(--ls-fond);
-  border: 0.5px solid var(--ls-gray-200);
+  background: var(--ls-fond-carte);   /* #EDFFED */
+  border: 1px solid #C8F0C8;
   border-radius: var(--ls-radius-md);
-  padding: 10px 12px;
+  padding: 12px 14px;
   cursor: pointer;
   transition: box-shadow .15s, transform .1s, border-color .15s;
   position: relative;
@@ -177,46 +181,52 @@ body {
   opacity: .4;
   background: var(--ls-violet-soft);
 }
-.ls-card.sortable-drag { box-shadow: 0 6px 20px rgba(39,27,121,0.18); }
+.ls-card.sortable-drag {
+  box-shadow: 0 8px 24px rgba(39,27,121,0.18);
+}
 
+/* Titre de la carte */
 .ls-card-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ls-violet-dark);
-  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ls-violet);        /* #271B79 */
+  margin-bottom: 8px;
   line-height: 1.4;
 }
 
+/* Champs de la carte */
 .ls-card-fields {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .ls-card-field {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--ls-gray-400);
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ls-canard);        /* #16B7C7 */
+  flex-wrap: wrap;
 }
 
 .ls-card-field-label {
-  font-weight: 500;
-  color: var(--ls-gray-400);
+  font-weight: 600;
+  color: var(--ls-violet);        /* #271B79 */
   flex-shrink: 0;
+  font-size: 12px;
 }
 
-/* ── Badges (Choice, Ref) ───────────────────────────────────── */
+/* â”€â”€ Badges (Choice, Ref) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
-  padding: 1px 7px;
+  padding: 2px 8px;
   border-radius: 20px;
   white-space: nowrap;
-  max-width: 140px;
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -229,53 +239,54 @@ body {
   color: var(--ls-canard-dark);
 }
 
-/* ── Bouton supprimer ───────────────────────────────────────── */
+/* â”€â”€ Bouton supprimer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-card-delete {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 9px;
+  right: 9px;
   background: none;
   border: none;
   cursor: pointer;
   color: var(--ls-gray-200);
   font-size: 13px;
-  line-height: 1;
-  padding: 2px;
+  padding: 3px;
   border-radius: 4px;
   opacity: 0;
   transition: opacity .15s, color .15s, background .15s;
 }
 .ls-card:hover .ls-card-delete { opacity: 1; }
-.ls-card-delete:hover { color: var(--ls-danger); background: var(--ls-danger-soft); }
+.ls-card-delete:hover {
+  color: var(--ls-danger);
+  background: var(--ls-danger-soft);
+}
 
-/* ── Panneau de config ──────────────────────────────────────── */
+/* â”€â”€ Panneau de config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 #ls-config {
-  padding: 16px;
+  padding: 20px;
   background: var(--ls-fond);
   min-height: 100vh;
+  font-family: var(--ls-font);
 }
 
 .ls-config-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--ls-violet);
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.ls-config-section {
-  margin-bottom: 20px;
-}
+.ls-config-section { margin-bottom: 22px; }
 
 .ls-config-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ls-gray-400);
   text-transform: uppercase;
-  letter-spacing: .07em;
-  margin-bottom: 8px;
+  letter-spacing: .08em;
+  margin-bottom: 10px;
 }
 
 .ls-config-row {
@@ -283,14 +294,15 @@ body {
   align-items: center;
   gap: 10px;
   padding: 7px 0;
-  border-bottom: 0.5px solid var(--ls-gray-200);
-  font-size: 13px;
+  border-bottom: 1px solid var(--ls-gray-200);
+  font-size: 14px;
+  color: var(--ls-violet);
 }
 .ls-config-row:last-child { border-bottom: none; }
 
 .ls-config-row input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   accent-color: var(--ls-violet);
   cursor: pointer;
   flex-shrink: 0;
@@ -298,12 +310,13 @@ body {
 
 .ls-config-select {
   width: 100%;
-  padding: 7px 10px;
-  border: 0.5px solid var(--ls-gray-200);
-  border-radius: var(--ls-radius-sm);
+  padding: 8px 10px;
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--ls-radius-md);
   background: var(--ls-white);
-  font-size: 13px;
-  color: var(--ls-gray-700);
+  font-family: var(--ls-font);
+  font-size: 14px;
+  color: var(--ls-violet);
   cursor: pointer;
 }
 .ls-config-select:focus {
@@ -312,20 +325,16 @@ body {
   box-shadow: 0 0 0 2px rgba(22,183,199,.15);
 }
 
-/* ── Toggle readonly ────────────────────────────────────────── */
+/* â”€â”€ Toggle readonly â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-toggle-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 0;
-  font-size: 13px;
+  font-size: 14px;
+  color: var(--ls-violet);
 }
-
-.ls-toggle {
-  position: relative;
-  width: 34px;
-  height: 19px;
-}
+.ls-toggle { position: relative; width: 36px; height: 20px; }
 .ls-toggle input { opacity: 0; width: 0; height: 0; }
 .ls-toggle-slider {
   position: absolute;
@@ -338,26 +347,25 @@ body {
 .ls-toggle-slider::before {
   content: '';
   position: absolute;
-  width: 13px;
-  height: 13px;
+  width: 14px; height: 14px;
   background: white;
   border-radius: 50%;
-  top: 3px;
-  left: 3px;
+  top: 3px; left: 3px;
   transition: transform .2s;
 }
 .ls-toggle input:checked + .ls-toggle-slider { background: var(--ls-violet); }
-.ls-toggle input:checked + .ls-toggle-slider::before { transform: translateX(15px); }
+.ls-toggle input:checked + .ls-toggle-slider::before { transform: translateX(16px); }
 
-/* ── État vide ──────────────────────────────────────────────── */
+/* â”€â”€ Ã‰tat vide â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ls-empty {
   text-align: center;
-  padding: 32px 16px;
+  padding: 40px 20px;
   color: var(--ls-gray-400);
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 1.7;
 }
 
-/* ── Scrollbar ──────────────────────────────────────────────── */
+/* â”€â”€ Scrollbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 #ls-board::-webkit-scrollbar { height: 6px; }
 #ls-board::-webkit-scrollbar-track { background: transparent; }
 #ls-board::-webkit-scrollbar-thumb {
