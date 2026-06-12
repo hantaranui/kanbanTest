@@ -274,10 +274,17 @@ function _buildToolbar() {
   const choiceCols  = _getChoiceCols();
   const sourceMeta  = _colsMeta.find(c => c.colId === _sourceColId);
   const allChoices  = sourceMeta ? _getChoices(sourceMeta) : [];
-  const userFields  = _colsMeta.filter(c =>
-    !['id','manualSort'].includes(c.colId) && !c.colId.startsWith('gristHelper')
+  /* Tous les champs de la table — comme Élodie, pas de filtrage par type */
+  const userFields = _colsMeta.filter(c =>
+    c.colId !== 'manualSort' && !c.colId.startsWith('gristHelper')
   );
-  const dateCols    = _colsMeta.filter(c => c.type === 'Date' || c.type === 'DateTime');
+  /* Colonnes date : toutes les colonnes de la table sauf les Choice et Attachments
+     L'utilisateur choisit — exactement comme Élodie Gateau */
+  const dateCols = _colsMeta.filter(c =>
+    !['Choice','ChoiceList','Attachments','Bool'].includes(c.type) &&
+    !c.colId.startsWith('gristHelper') &&
+    c.colId !== 'manualSort'
+  );
 
   /* 1. Source */
   const srcWrap = document.createElement('div');
