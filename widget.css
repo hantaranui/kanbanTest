@@ -453,17 +453,19 @@ body {
 #ls-board::-webkit-scrollbar-track { background: transparent; }
 #ls-board::-webkit-scrollbar-thumb { background: var(--ls-gray-200); border-radius: 3px; }
 
-/* ── Toolbar ────────────────────────────────────────────────── */
-.ls-toolbar-logo {
+/* ── Logo header ────────────────────────────────────────────── */
+.ls-logo-header {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-  margin-right: 4px;
+  padding: 12px 16px 8px;
+  background: var(--ls-white);
 }
-.ls-toolbar-logo svg {
+.ls-logo-header svg {
   display: block;
+  filter: drop-shadow(0 2px 4px rgba(39,27,121,0.15));
 }
 
+/* ── Toolbar ────────────────────────────────────────────────── */
 .ls-toolbar {
   display: flex;
   flex-wrap: wrap;
