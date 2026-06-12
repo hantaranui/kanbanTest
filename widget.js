@@ -199,9 +199,9 @@ function _render() {
   const sourceMeta = _colsMeta.find(c => c.colId === _sourceColId);
   let choices = _getChoices(sourceMeta);
 
-  /* Filtrer colonnes masquées */
+  /* Filtrer colonnes masquées — _visibleCols = liste des labels CACHÉS (comme Élodie) */
   if (_visibleCols && _visibleCols.length > 0) {
-    choices = choices.filter(c => _visibleCols.includes(c.label));
+    choices = choices.filter(c => !_visibleCols.includes(c.label));
   }
 
   if (!choices.length) {
@@ -278,13 +278,18 @@ function _buildToolbar() {
   const userFields = _colsMeta.filter(c =>
     c.colId !== 'manualSort' && !c.colId.startsWith('gristHelper')
   );
-  /* Colonnes date : toutes les colonnes de la table sauf les Choice et Attachments
-     L'utilisateur choisit — exactement comme Élodie Gateau */
-  const dateCols = _colsMeta.filter(c =>
-    !['Choice','ChoiceList','Attachments','Bool'].includes(c.type) &&
-    !c.colId.startsWith('gristHelper') &&
-    c.colId !== 'manualSort'
-  );
+  /* Colonnes date — exactement comme Élodie Gateau (isDateLike) :
+     regarde le type brut ET le widget dans widgetOptions */
+  const dateCols = _colsMeta.filter(c => {
+    if (!c.colId || c.colId.startsWith('gristHelper') || c.colId === 'manualSort') return false;
+    const t = String(c.type || '').toLowerCase();
+    let w = '';
+    try {
+      const wo = typeof c.widgetOptions === 'string' ? JSON.parse(c.widgetOptions) : (c.widgetOptions || {});
+      w = String(wo?.widget || '').toLowerCase();
+    } catch(e) {}
+    return t.includes('date') || w === 'date' || w === 'datetime';
+  });
 
   /* 1. Source */
   const srcWrap = document.createElement('div');
@@ -362,25 +367,27 @@ function _buildToolbar() {
     const grid = document.createElement('div');
     grid.className = 'ls-panel-grid';
 
+    /* Élodie stocke les CACHÉES (hidden), pas les visibles.
+       _visibleCols est ici une liste de labels CACHÉS (null = rien de caché = tout visible) */
+    const hiddenCols = Array.isArray(_visibleCols) ? _visibleCols : [];
+
     /* Option (vide) */
-    const vide = _buildCheckbox('(vide)', '(vide)',
-      _visibleCols ? _visibleCols.includes('(vide)') : false,
-      async (checked) => {
-        let cur = _visibleCols ? [..._visibleCols] : allChoices.map(c => c.label);
-        if (checked) { if (!cur.includes('(vide)')) cur.push('(vide)'); }
-        else cur = cur.filter(x => x !== '(vide)');
-        await _saveOpts({ ls_vis_cols: cur });
-      }
-    );
+    const videChecked = !hiddenCols.includes('(vide)');
+    const vide = _buildCheckbox('(vide)', '(vide)', videChecked, async (checked) => {
+      let cur = [...hiddenCols];
+      if (!checked) { if (!cur.includes('(vide)')) cur.push('(vide)'); }
+      else cur = cur.filter(x => x !== '(vide)');
+      await _saveOpts({ ls_vis_cols: cur.length === 0 ? null : cur });
+    });
     grid.appendChild(vide);
 
     allChoices.forEach(choice => {
-      const checked = _visibleCols === null || _visibleCols.includes(choice.label);
+      const checked = !hiddenCols.includes(choice.label);
       const cb = _buildCheckbox(choice.label, choice.label, checked, async (isChecked) => {
-        let cur = _visibleCols ? [..._visibleCols] : allChoices.map(c => c.label);
-        if (isChecked) { if (!cur.includes(choice.label)) cur.push(choice.label); }
+        let cur = [...hiddenCols];
+        if (!isChecked) { if (!cur.includes(choice.label)) cur.push(choice.label); }
         else cur = cur.filter(x => x !== choice.label);
-        await _saveOpts({ ls_vis_cols: cur.length === allChoices.length ? null : cur });
+        await _saveOpts({ ls_vis_cols: cur.length === 0 ? null : cur });
       });
       grid.appendChild(cb);
     });
@@ -528,7 +535,10 @@ function _buildColumn(choice, sourceMeta, records) {
   header.querySelector('.ls-col-collapse-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     col.classList.toggle('collapsed');
-    localStorage.setItem('ls_col_' + choice.label, col.classList.contains('collapsed') ? 'collapsed' : 'open');
+    const isNowCollapsed = col.classList.contains('collapsed');
+    localStorage.setItem('ls_col_' + choice.label, isNowCollapsed ? 'collapsed' : 'open');
+    /* Mettre à jour le titre du bouton pour indiquer l'action possible */
+    e.currentTarget.title = isNowCollapsed ? 'Agrandir' : 'Réduire';
   });
   const addBtn = header.querySelector('.ls-col-add-btn');
   if (addBtn) addBtn.addEventListener('click', () => _addRecord(choice.label));

@@ -148,7 +148,14 @@ body {
   border-bottom: none;
   justify-content: flex-start;
 }
-.ls-col.collapsed .ls-col-actions { display: none; }
+.ls-col.collapsed .ls-col-actions {
+  writing-mode: horizontal-tb;
+  transform: rotate(180deg);
+  display: flex;
+  margin-top: 8px;
+}
+.ls-col.collapsed .ls-col-add-btn { display: none; }
+.ls-col.collapsed .ls-col-counter { display: none; }
 
 /* Zone cartes */
 .ls-col-body {
