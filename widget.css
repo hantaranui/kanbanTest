@@ -454,6 +454,16 @@ body {
 #ls-board::-webkit-scrollbar-thumb { background: var(--ls-gray-200); border-radius: 3px; }
 
 /* ── Toolbar ────────────────────────────────────────────────── */
+.ls-toolbar-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+.ls-toolbar-logo svg {
+  display: block;
+}
+
 .ls-toolbar {
   display: flex;
   flex-wrap: wrap;
