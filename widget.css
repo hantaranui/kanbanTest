@@ -1,7 +1,7 @@
 /* ============================================================
-   KANBAN LASUITE.COOP â€” widget.css
-   Style inspirÃ© FourAxis â€” adaptÃ© charte LaSuite
-   #271B79 Â· #B9FFB7 Â· #16B7C7 Â· #FBFFFA Â· Police Barlow
+   KANBAN LASUITE.COOP — widget.css
+   Style inspiré FourAxis — adapté charte LaSuite
+   #271B79 · #B9FFB7 · #16B7C7 · #FBFFFA · Police Barlow
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap');
@@ -18,12 +18,12 @@
   --ls-white:       #FFFFFF;
   --ls-gray-100:    #F4F4F2;
   --ls-gray-200:    #E2E2DE;
-  --ls-gray-400:    #9B9B95;
-  --ls-gray-600:    #5A5A55;
+  --ls-gray-400:    #16B7C7;
+  --ls-gray-600:    #271B79;
   --ls-danger:      #E03131;
   --ls-danger-soft: #FFF0F0;
 
-  /* PrioritÃ©s */
+  /* Priorités */
   --prio-urgent-bg: #FFE3E3; --prio-urgent-fg: #C92A2A;
   --prio-high-bg:   #FFE8CC; --prio-high-fg:   #D9480F;
   --prio-medium-bg: #FFF3BF; --prio-medium-fg: #E67700;
@@ -50,7 +50,7 @@ body {
   padding: 0;
 }
 
-/* â”€â”€ Board â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Board ──────────────────────────────────────────────────── */
 #ls-board {
   display: flex;
   gap: 14px;
@@ -60,7 +60,7 @@ body {
   align-items: flex-start;
 }
 
-/* â”€â”€ Colonne â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Colonne ────────────────────────────────────────────────── */
 .ls-col {
   display: flex;
   flex-direction: column;
@@ -73,7 +73,7 @@ body {
   overflow: hidden;
 }
 
-/* En-tÃªte colonne */
+/* En-tête colonne */
 .ls-col-header {
   display: flex;
   align-items: center;
@@ -83,7 +83,7 @@ body {
   border-bottom: 1px solid var(--ls-gray-100);
 }
 
-/* Point colorÃ© */
+/* Point coloré */
 .ls-col-dot {
   width: 10px;
   height: 10px;
@@ -182,7 +182,7 @@ body {
   background: var(--ls-violet-soft);
 }
 
-/* â”€â”€ Carte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Carte ──────────────────────────────────────────────────── */
 .ls-card {
   background: var(--ls-fond-carte);
   border: 1px solid #C8F0C8;
@@ -199,7 +199,7 @@ body {
 .ls-card.sortable-ghost { opacity: .35; background: var(--ls-violet-soft); }
 .ls-card.sortable-drag  { box-shadow: 0 8px 24px rgba(39,27,121,0.18); }
 
-/* Ligne haute : prioritÃ© + menu */
+/* Ligne haute : priorité + menu */
 .ls-card-top {
   display: flex;
   align-items: center;
@@ -207,7 +207,7 @@ body {
   margin-bottom: 8px;
 }
 
-/* Badge prioritÃ© */
+/* Badge priorité */
 .ls-badge-prio {
   font-size: 13px;
   font-weight: 600;
@@ -333,7 +333,7 @@ body {
 .ls-card-dropdown button.danger { color: var(--ls-danger); }
 .ls-card-dropdown button.danger:hover { background: var(--ls-danger-soft); }
 
-/* â”€â”€ Badges Choice / Ref â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Badges Choice / Ref ────────────────────────────────────── */
 .ls-badge {
   display: inline-flex;
   align-items: center;
@@ -349,7 +349,7 @@ body {
 .ls-badge-default { background: var(--ls-violet-soft); color: var(--ls-violet); }
 .ls-badge-ref     { background: #E0F7FA; color: var(--ls-canard-dark); }
 
-/* â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Config ─────────────────────────────────────────────────── */
 #ls-config {
   padding: 20px;
   background: var(--ls-fond);
@@ -432,7 +432,7 @@ body {
 .ls-toggle input:checked + .ls-toggle-slider { background: var(--ls-violet); }
 .ls-toggle input:checked + .ls-toggle-slider::before { transform: translateX(16px); }
 
-/* â”€â”€ Ã‰tat vide â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── État vide ──────────────────────────────────────────────── */
 .ls-empty {
   text-align: center;
   padding: 40px 20px;
@@ -441,7 +441,158 @@ body {
   line-height: 1.7;
 }
 
-/* â”€â”€ Scrollbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Scrollbar ──────────────────────────────────────────────── */
 #ls-board::-webkit-scrollbar { height: 6px; }
 #ls-board::-webkit-scrollbar-track { background: transparent; }
 #ls-board::-webkit-scrollbar-thumb { background: var(--ls-gray-200); border-radius: 3px; }
+
+/* ── Toolbar ────────────────────────────────────────────────── */
+.ls-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--ls-white);
+  border-bottom: 1px solid var(--ls-gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+}
+
+.ls-toolbar-select-wrap { position: relative; }
+
+.ls-toolbar-select {
+  padding: 7px 12px;
+  border: 1px solid var(--ls-gray-200);
+  border-radius: 20px;
+  background: var(--ls-white);
+  font-family: var(--ls-font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ls-violet);
+  cursor: pointer;
+  appearance: auto;
+  min-width: 160px;
+}
+.ls-toolbar-select:focus {
+  outline: none;
+  border-color: var(--ls-canard);
+}
+
+.ls-toolbar-btn {
+  padding: 7px 14px;
+  border: 1px solid var(--ls-gray-200);
+  border-radius: 20px;
+  background: var(--ls-white);
+  font-family: var(--ls-font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ls-violet);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.ls-toolbar-btn:hover {
+  background: var(--ls-violet-soft);
+  border-color: var(--ls-violet);
+}
+
+/* ── Panneaux déroulants ────────────────────────────────────── */
+.ls-toolbar-panel-wrapper {
+  width: 100%;
+  padding: 0 0 4px;
+}
+
+.ls-panel {
+  background: var(--ls-white);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--ls-radius-md);
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+
+.ls-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ls-violet);
+  margin-bottom: 10px;
+}
+
+.ls-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 6px;
+}
+
+.ls-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.ls-check-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--ls-violet);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Container colonnes ─────────────────────────────────────── */
+.ls-cols-container {
+  display: flex;
+  gap: 14px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  align-items: flex-start;
+  flex: 1;
+}
+
+/* ── Groupement (accordéon) ─────────────────────────────────── */
+.ls-group {
+  margin-bottom: 8px;
+}
+
+.ls-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: var(--ls-violet-soft);
+  border-radius: var(--ls-radius-sm);
+  cursor: pointer;
+  margin-bottom: 6px;
+  user-select: none;
+}
+.ls-group-header:hover { background: #D8D4F0; }
+
+.ls-group-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ls-violet);
+}
+.ls-group-count {
+  font-size: 12px;
+  color: var(--ls-canard);
+  background: white;
+  border-radius: 20px;
+  padding: 1px 7px;
+}
+
+.ls-group.collapsed .ls-group-body { display: none; }
+.ls-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 4px;
+}
+
+/* Ajuster le board pour la toolbar sticky */
+#ls-board {
+  flex-direction: column;
+  padding: 0;
+  min-height: 100vh;
+}
