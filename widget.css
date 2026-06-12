@@ -462,6 +462,7 @@ body {
 }
 .ls-logo-header svg {
   display: block;
+  transform: rotate(-8deg);
   filter: drop-shadow(0 2px 4px rgba(39,27,121,0.15));
 }
 
